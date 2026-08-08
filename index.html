@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unlock My Heart 🔒</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+        --rose: #ff4b72; --gold: #ffd166; --purple: #7b2ff7;
+        --bg: #0a0118; --border: rgba(255,255,255,0.13);
+        --skin: #fde6b8; --skin2: #f4b97a;
+        --hair: #4a1d96; --hair2: #7c3aed;
+        --body-col: #7c3aed; --body2: #5b21b6;
+    }
+    html, body { height:100%; overflow:hidden; background:var(--bg); font-family:'Inter',sans-serif; color:white; }
+    #bgCanvas { position:fixed; inset:0; z-index:0; }
+    .bg-glow { position:fixed; border-radius:50%; filter:blur(90px); z-index:0; pointer-events:none; }
+    .g1 { width:550px;height:550px; background:radial-gradient(circle,rgba(123,47,247,.3),transparent 70%); top:-130px;left:-100px; animation:gd1 9s ease-in-out infinite; }
+    .g2 { width:450px;height:450px; background:radial-gradient(circle,rgba(255,75,114,.25),transparent 70%); bottom:-100px;right:-80px; animation:gd2 11s ease-in-out infinite; }
+    .g3 { width:300px;height:300px; background:radial-gradient(circle,rgba(255,209,102,.12),transparent 70%); top:50%;left:50%;transform:translate(-50%,-50%); animation:gp 5s ease-in-out infinite; }
+    @keyframes gd1{0%,100%{transform:translate(0,0);}50%{transform:translate(38px,30px);}}
+    @keyframes gd2{0%,100%{transform:translate(0,0);}50%{transform:translate(-32px,-24px);}}
+    @keyframes gp{0%,100%{opacity:.5;transform:translate(-50%,-50%)scale(1);}50%{opacity:1;transform:translate(-50%,-50%)scale(1.3);}}
+
+    /* =========== LOGIN PAGE =========== */
+    #page { position:relative;z-index:10;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem; }
+    .lcard {
+        width:100%;max-width:420px;
+        background:rgba(10,2,26,.85);border:1px solid var(--border);border-radius:28px;
+        padding:2.8rem 2.2rem 2.2rem;
+        box-shadow:0 28px 80px rgba(0,0,0,.7),0 0 50px rgba(123,47,247,.2);
+        backdrop-filter:blur(22px);animation:cardBreath 5s ease-in-out infinite;
+    }
+    @keyframes cardBreath{0%,100%{box-shadow:0 28px 80px rgba(0,0,0,.7),0 0 50px rgba(123,47,247,.2);}50%{box-shadow:0 28px 80px rgba(0,0,0,.7),0 0 80px rgba(255,75,114,.22);}}
+    @keyframes cardShake{0%,100%{transform:translateX(0);}18%,54%{transform:translateX(-10px);}36%,72%{transform:translateX(10px);}}
+    .lcard.shake { animation:cardShake .42s ease; }
+    .card-title { font-family:'Playfair Display',serif;font-size:1.9rem;text-align:center;margin-bottom:.4rem;
+        background:linear-gradient(135deg,#fff4f8,#ffd6e0,#c77dff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+    .card-sub { font-size:.87rem;color:rgba(255,255,255,.48);text-align:center;margin-bottom:2rem;line-height:1.5; }
+    .field { position:relative;margin-bottom:1rem; }
+    .field-ico { position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--rose);font-size:.88rem;pointer-events:none; }
+    .field input { width:100%;padding:.88rem 1rem .88rem 2.6rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.11);border-radius:13px;color:white;font-size:.95rem;font-family:'Inter',sans-serif;outline:none;transition:all .3s; }
+    .field input::placeholder{color:rgba(255,255,255,.3);}
+    .field input:focus{border-color:var(--rose);background:rgba(255,75,114,.08);box-shadow:0 0 18px rgba(255,75,114,.25);}
+    .err-msg{color:#ff7597;font-size:.78rem;min-height:1.1rem;margin-bottom:.6rem;padding-left:4px;}
+    .sub-btn { width:100%;padding:.95rem;border-radius:13px;border:none;background:linear-gradient(135deg,#f72585,#ff4b72,#c77dff);background-size:200%;animation:btnGrad 4s ease infinite;color:white;font-size:1rem;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;box-shadow:0 8px 26px rgba(247,37,133,.48);transition:all .3s;display:flex;align-items:center;justify-content:center;gap:.5rem; }
+    @keyframes btnGrad{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+    .sub-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 38px rgba(247,37,133,.6);}
+    .sub-btn:disabled{opacity:.65;cursor:not-allowed;transform:none;}
+    .hint-row{text-align:center;margin-top:1.4rem;}
+    .hint-toggle{background:none;border:none;color:rgba(255,255,255,.4);font-size:.8rem;cursor:pointer;font-family:'Inter',sans-serif;transition:color .25s;}
+    .hint-toggle:hover{color:var(--gold);}
+    .hint-txt{display:none;margin-top:.4rem;color:var(--gold);font-size:.84rem;animation:fadeUp .35s ease;}
+    .hint-txt.show{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(-5px);}to{opacity:1;transform:translateY(0);}}
+
+    /* ============================================================
+       ANIMATION OVERLAY
+    ============================================================ */
+    #animOv {
+        position:fixed;inset:0;z-index:9000;
+        background:radial-gradient(ellipse at center,#1c0542 0%,#060015 100%);
+        opacity:0;pointer-events:none;transition:opacity .55s ease;
+        overflow:hidden;
+    }
+    #animOv.active{opacity:1;pointer-events:all;}
+
+    /* Stars */
+    .star{position:absolute;background:white;border-radius:50%;animation:twink var(--d) ease-in-out var(--delay,0s) infinite;}
+    @keyframes twink{0%,100%{opacity:.12;transform:scale(1);}50%{opacity:1;transform:scale(1.6);}}
+
+    /* Floor glow */
+    #floorGlow {
+        position:absolute;bottom:4%;left:50%;transform:translateX(-50%);
+        width:320px;height:30px;
+        background:radial-gradient(ellipse,rgba(199,125,255,.4),transparent 70%);
+        filter:blur(6px);
+        opacity:0;transition:opacity .8s ease;
+    }
+    #animOv.active #floorGlow { opacity:1; }
+
+    /* Step label */
+    #stepLbl {
+        position:absolute;top:4%;width:90%;text-align:center;
+        font-family:'Playfair Display',serif;font-style:italic;font-size:1.05rem;
+        color:rgba(255,255,255,.55);letter-spacing:.06em;
+        opacity:0;transition:opacity .4s ease;
+    }
+    #stepLbl.vis{opacity:1;}
+
+    /* ============================================================
+       BIG TOY / DOLL  — absolutely centered
+    ============================================================ */
+    #dollWrap {
+        position:absolute;
+        left:50%; top:52%;
+        transform:translate(-50%, 200vh) scale(0.82);
+        transition:transform 1.1s cubic-bezier(0.34,1.56,0.64,1);
+        transform-origin:bottom center;
+        display:flex;flex-direction:column;align-items:center;
+        z-index:5;
+    }
+    #dollWrap.entered  { transform:translate(-50%,-52%) scale(0.82); }
+    #dollWrap.idle     { animation:dollIdle 2.8s ease-in-out infinite; }
+    @keyframes dollIdle{
+        0%,100%{transform:translate(-50%,-52%) scale(0.82) rotate(-.6deg);}
+        50%{transform:translate(-50%,calc(-52% - 14px)) scale(0.82) rotate(.6deg);}
+    }
+    #dollWrap.excited  { animation:dollExcited .5s ease-in-out 3; }
+    @keyframes dollExcited{
+        0%,100%{transform:translate(-50%,-52%) scale(0.82);}
+        50%{transform:translate(-50%,calc(-52% - 22px)) scale(0.86);}
+    }
+    #dollWrap.notice   { animation:dollNotice .65s ease forwards; }
+    @keyframes dollNotice{
+        0%{transform:translate(-50%,-52%) scale(0.82);}
+        40%{transform:translate(-50%,calc(-52% - 26px)) scale(0.82) rotate(3deg);}
+        100%{transform:translate(-50%,calc(-52% - 10px)) scale(0.82);}
+    }
+    #dollWrap.happy    { animation:dollHappy 2s ease-in-out infinite; }
+    @keyframes dollHappy{
+        0%,100%{transform:translate(-50%,calc(-52% - 10px)) scale(0.82);}
+        25%{transform:translate(-50%,calc(-52% - 24px)) scale(0.85) rotate(2deg);}
+        75%{transform:translate(-50%,calc(-52% - 6px)) scale(0.8) rotate(-1.5deg);}
+    }
+    #dollWrap.exit {
+        transform:translate(-50%, 200vh) scale(0.82) !important;
+        opacity:0 !important;
+        transition:transform .9s cubic-bezier(.4,0,.6,1), opacity .7s ease !important;
+    }
+
+    /* --- HAIR --- */
+    .d-hair {
+        width:130px;height:72px;
+        background:linear-gradient(160deg,var(--hair),var(--hair2));
+        border-radius:50% 50% 0 0;
+        position:relative;z-index:1;
+        box-shadow:0 -4px 20px rgba(124,58,237,.5);
+    }
+    .d-bang{position:absolute;background:linear-gradient(135deg,#3b0f6e,#8b5cf6);border-radius:50%;}
+    .d-bang:nth-child(1){width:34px;height:44px;top:12px;left:-6px;transform:rotate(-12deg);}
+    .d-bang:nth-child(2){width:28px;height:40px;top:16px;left:24px;transform:rotate(-4deg);}
+    .d-bang:nth-child(3){width:32px;height:46px;top:8px;left:52px;transform:rotate(4deg);}
+    .d-bang:nth-child(4){width:28px;height:42px;top:14px;left:82px;transform:rotate(11deg);}
+    .d-bang:nth-child(5){width:22px;height:34px;top:18px;left:108px;transform:rotate(16deg);}
+    .d-side{position:absolute;background:linear-gradient(135deg,#3b0f6e,#8b5cf6);border-radius:0 0 60% 60%;}
+    .d-side.L{width:24px;height:55px;top:44px;left:-14px;transform:rotate(-8deg);}
+    .d-side.R{width:24px;height:55px;top:44px;right:-14px;transform:rotate(8deg);}
+    /* hair accessories - sparkle pins */
+    .hair-pin{position:absolute;font-size:1rem;top:8px;animation:pinSpin 3s linear infinite;}
+    .hair-pin.p1{left:18px;animation-delay:0s;}
+    .hair-pin.p2{right:18px;animation-delay:1.5s;}
+    @keyframes pinSpin{0%,100%{transform:scale(1) rotate(0deg);}50%{transform:scale(1.4) rotate(180deg);}}
+
+    /* --- HEAD --- */
+    .d-head {
+        width:130px;height:140px;
+        background:linear-gradient(160deg,var(--skin),var(--skin2));
+        border-radius:65px 65px 58px 58px;
+        position:relative;margin-top:-28px;z-index:2;
+        box-shadow:0 12px 32px rgba(244,185,122,.4),inset -6px -8px 18px rgba(200,130,50,.22);
+    }
+    .d-ear{position:absolute;top:42px;width:22px;height:30px;background:linear-gradient(var(--skin),var(--skin2));border-radius:50%;z-index:1;}
+    .d-ear.L{left:-11px;} .d-ear.R{right:-11px;}
+    .d-ear-inner{width:10px;height:16px;background:rgba(200,130,50,.25);border-radius:50%;position:absolute;top:6px;left:5px;}
+
+    /* --- EYES --- */
+    .d-eye-wrap{position:absolute;top:48px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;}
+    .d-eye-wrap.L{left:18px;} .d-eye-wrap.R{right:18px;}
+    .d-eyebrow{width:28px;height:5px;background:#3b0f6e;border-radius:3px;margin-bottom:3px;transition:transform .3s;}
+    #dollWrap.excited .d-eyebrow, #dollWrap.happy .d-eyebrow{transform:translateY(-3px) rotate(0deg);}
+    .d-eye-white{width:30px;height:30px;background:white;border-radius:50%;position:relative;box-shadow:inset 0 3px 6px rgba(0,0,0,.1);transition:all .3s;}
+    .d-pupil{width:16px;height:18px;background:radial-gradient(circle at 35% 35%,#8b5cf6,#1a0350);border-radius:50%;position:absolute;top:5px;left:6px;transition:all .3s;}
+    .d-shine1{width:6px;height:6px;background:white;border-radius:50%;position:absolute;top:3px;left:7px;}
+    .d-shine2{width:3px;height:3px;background:rgba(255,255,255,.7);border-radius:50%;position:absolute;top:11px;left:4px;}
+    .d-lid{position:absolute;top:0;left:0;width:100%;height:0;background:linear-gradient(160deg,var(--skin),var(--skin2));border-radius:50%;transition:height .07s ease;z-index:5;}
+    .d-eye-wrap.blink .d-lid{height:100%;}
+    #dollWrap.happy .d-eye-white{border-radius:50% 50% 0 0;transform:scaleY(.45);}
+    #dollWrap.happy .d-pupil{top:1px;}
+    .d-eye-star{position:absolute;top:-12px;right:-4px;font-size:1rem;opacity:0;transition:opacity .4s;}
+    #dollWrap.happy .d-eye-star{opacity:1;animation:eSpin 1.1s linear infinite;}
+    @keyframes eSpin{to{transform:rotate(360deg) scale(1.3);}}
+    /* Lashes */
+    .d-lash{position:absolute;top:-2px;width:3px;height:7px;background:#2c1654;border-radius:2px;transform-origin:bottom center;}
+    .d-lash:nth-child(1){left:4px;transform:rotate(-20deg);}
+    .d-lash:nth-child(2){left:9px;transform:rotate(-8deg);}
+    .d-lash:nth-child(3){left:16px;transform:rotate(0deg);}
+    .d-lash:nth-child(4){left:22px;transform:rotate(8deg);}
+    .d-lash:nth-child(5){left:26px;transform:rotate(18deg);}
+
+    /* --- CHEEKS --- */
+    .d-cheek{position:absolute;width:28px;height:18px;background:rgba(255,100,120,.3);border-radius:50%;top:85px;transition:all .4s;}
+    .d-cheek.L{left:6px;} .d-cheek.R{right:6px;}
+    #dollWrap.happy .d-cheek{background:rgba(255,100,120,.6);width:32px;height:20px;}
+    #dollWrap.excited .d-cheek{background:rgba(255,100,120,.5);}
+
+    /* --- NOSE --- */
+    .d-nose{position:absolute;bottom:46px;left:50%;transform:translateX(-50%);width:12px;height:8px;border-bottom:3px solid rgba(180,110,60,.4);border-radius:0 0 50% 50%;}
+
+    /* --- MOUTH --- */
+    .d-mouth{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);width:30px;height:16px;border:3px solid rgba(180,80,60,.65);border-top:none;border-radius:0 0 28px 28px;transition:all .4s ease;}
+    #dollWrap.happy .d-mouth{width:46px;height:24px;bottom:16px;border-color:#c0392b;}
+    #dollWrap.excited .d-mouth{width:38px;height:20px;}
+    /* little teeth */
+    .d-tooth{display:none;position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:20px;height:8px;background:white;border-radius:0 0 6px 6px;}
+    #dollWrap.happy .d-tooth{display:block;}
+
+    /* --- NECK --- */
+    .d-neck{width:34px;height:18px;background:linear-gradient(var(--skin2),#e8a060);margin:-4px auto 0;border-radius:0 0 10px 10px;}
+
+    /* --- BODY --- */
+    .d-body {
+        width:140px;height:155px;
+        background:linear-gradient(155deg,var(--body-col),var(--body2));
+        border-radius:70px 70px 52px 52px;
+        position:relative;margin-top:-8px;
+        box-shadow:0 14px 38px rgba(92,33,182,.55),inset 0 3px 10px rgba(255,255,255,.12);
+        display:flex;align-items:center;justify-content:center;overflow:visible;
+    }
+    .d-collar{position:absolute;top:0;left:50%;transform:translateX(-50%);width:42px;height:22px;background:linear-gradient(160deg,#a855f7,#7c3aed);border-radius:0 0 50% 50%;border-bottom:2px solid rgba(255,255,255,.2);}
+    /* shirt detail stripes */
+    .d-stripe{position:absolute;width:90%;height:2px;background:rgba(255,255,255,.08);border-radius:2px;}
+    .d-stripe:nth-child(2){top:45px;}
+    .d-stripe:nth-child(3){top:68px;}
+    .d-stripe:nth-child(4){top:91px;}
+    /* bow / accessory */
+    .d-bow{position:absolute;top:28px;left:50%;transform:translateX(-50%);font-size:1.4rem;}
+
+    /* CHEST DOORS */
+    .d-door{position:absolute;top:16px;width:70px;height:105px;z-index:2;transition:transform .75s cubic-bezier(.4,0,.2,1);}
+    .d-door.L{left:0;background:linear-gradient(155deg,#6d28d9,#4c1d95);border-radius:0 0 0 30px;transform-origin:left center;border-right:1px solid rgba(255,255,255,.15);}
+    .d-door.R{right:0;background:linear-gradient(155deg,#6d28d9,#4c1d95);border-radius:0 0 30px 0;transform-origin:right center;border-left:1px solid rgba(255,255,255,.15);}
+    /* door decorations */
+    .d-door-star{position:absolute;font-size:.8rem;bottom:14px;left:50%;transform:translateX(-50%);opacity:.4;}
+    #dollWrap.open .d-door.L{transform:rotateY(-85deg);}
+    #dollWrap.open .d-door.R{transform:rotateY(85deg);}
+
+    /* INNER CHEST */
+    .d-inner{position:absolute;inset:16px 0 0 0;border-radius:0 0 52px 52px;z-index:1;
+        background:radial-gradient(circle,rgba(255,75,114,0),rgba(255,75,114,0));
+        transition:background .9s ease .35s;}
+    #dollWrap.open .d-inner{background:radial-gradient(circle,rgba(255,140,170,.5) 0%,rgba(255,75,114,.2) 55%,transparent 80%);}
+
+    /* HEART INSIDE CHEST */
+    .d-chest-heart{
+        position:absolute;top:60px;left:50%;transform:translateX(-50%);
+        font-size:0;z-index:3;opacity:0;
+        filter:drop-shadow(0 0 22px #ff4b72) drop-shadow(0 0 40px #ff7597);
+        transition:font-size .7s cubic-bezier(0.175,.885,.32,1.275) .4s,
+                   opacity .6s ease .4s, top .7s ease .4s;
+    }
+    #dollWrap.open .d-chest-heart{font-size:3.5rem;opacity:1;top:36px;}
+    /* heart blink */
+    #dollWrap.heartblink .d-chest-heart{animation:hBlink 1.3s ease-in-out 3;}
+    @keyframes hBlink{
+        0%,100%{filter:drop-shadow(0 0 22px #ff4b72);transform:translateX(-50%) scale(1);}
+        50%{filter:drop-shadow(0 0 60px #ff0044) drop-shadow(0 0 100px #ff4b72) drop-shadow(0 0 140px #ff9999);transform:translateX(-50%) scale(1.35);}
+    }
+
+    /* ARMS — 3-part: upper + forearm + hand */
+    .d-arm-wrap{position:absolute;top:14px;}
+    .d-arm-wrap.L{left:-30px;} .d-arm-wrap.R{right:-30px;}
+    .d-upper{width:28px;height:62px;border-radius:14px;background:linear-gradient(160deg,var(--body-col),var(--body2));position:absolute;top:0;left:2px;transform-origin:top center;transition:transform .65s cubic-bezier(.4,0,.2,1);}
+    .d-fore{width:24px;height:48px;border-radius:12px;background:linear-gradient(160deg,var(--skin),var(--skin2));position:absolute;top:55px;left:5px;transform-origin:top center;transition:transform .65s cubic-bezier(.4,0,.2,1);}
+    .d-hand{width:30px;height:30px;background:radial-gradient(circle,var(--skin),var(--skin2));border-radius:50%;position:absolute;bottom:-12px;left:-2px;box-shadow:0 4px 8px rgba(0,0,0,.2);}
+    /* fingers */
+    .d-finger{position:absolute;width:7px;height:14px;background:linear-gradient(var(--skin),var(--skin2));border-radius:4px;bottom:22px;}
+    .d-finger:nth-child(1){left:2px;height:12px;transform:rotate(-12deg);}
+    .d-finger:nth-child(2){left:9px;height:14px;transform:rotate(-4deg);}
+    .d-finger:nth-child(3){left:16px;height:15px;transform:rotate(2deg);}
+    .d-finger:nth-child(4){left:23px;height:12px;transform:rotate(10deg);}
+    /* idle angles */
+    .d-arm-wrap.L .d-upper{transform:rotate(-12deg);}
+    .d-arm-wrap.R .d-upper{transform:rotate(12deg);}
+    /* notice - hands to chest */
+    #dollWrap.notice .d-arm-wrap.L .d-upper{transform:rotate(40deg);}
+    #dollWrap.notice .d-arm-wrap.R .d-upper{transform:rotate(-40deg);}
+    #dollWrap.notice .d-arm-wrap.L .d-fore{transform:rotate(-25deg);}
+    #dollWrap.notice .d-arm-wrap.R .d-fore{transform:rotate(25deg);}
+    /* open - arms spread wide + up */
+    #dollWrap.open .d-arm-wrap.L .d-upper{transform:rotate(-55deg) translateY(-5px);}
+    #dollWrap.open .d-arm-wrap.R .d-upper{transform:rotate(55deg) translateY(-5px);}
+    #dollWrap.open .d-arm-wrap.L .d-fore{transform:rotate(22deg);}
+    #dollWrap.open .d-arm-wrap.R .d-fore{transform:rotate(-22deg);}
+    /* excited - arms up high */
+    #dollWrap.excited .d-arm-wrap.L .d-upper{transform:rotate(-70deg);}
+    #dollWrap.excited .d-arm-wrap.R .d-upper{transform:rotate(70deg);}
+    /* happy wave - right arm */
+    #dollWrap.happy .d-arm-wrap.R .d-upper{animation:waveUp .6s ease-in-out infinite alternate;}
+    #dollWrap.happy .d-arm-wrap.L .d-upper{transform:rotate(-40deg);}
+    @keyframes waveUp{0%{transform:rotate(55deg) translateY(-5px);}100%{transform:rotate(15deg) translateY(-15px);}}
+
+    /* LEGS */
+    .d-legs{display:flex;gap:12px;margin-top:-5px;}
+    .d-leg-wrap{display:flex;flex-direction:column;align-items:center;}
+    .d-thigh{width:34px;height:52px;background:linear-gradient(160deg,#5b21b6,#4c1d95);border-radius:0 0 8px 8px;}
+    .d-shin{width:28px;height:44px;background:linear-gradient(160deg,var(--skin),var(--skin2));border-radius:0 0 8px 8px;margin-top:-4px;}
+    .d-shoe{width:44px;height:20px;background:linear-gradient(135deg,#1e0a3c,#3b0f6e);border-radius:50% 50% 50% 50%/30% 30% 70% 70%;margin-top:-3px;box-shadow:0 5px 12px rgba(0,0,0,.5);}
+    .d-shoe-shine{width:14px;height:6px;background:rgba(255,255,255,.2);border-radius:50%;position:relative;top:4px;left:6px;}
+    /* leg idle bob */
+    #dollWrap.idle .d-leg-wrap:nth-child(1){animation:legBob1 2.8s ease-in-out infinite;}
+    #dollWrap.idle .d-leg-wrap:nth-child(2){animation:legBob2 2.8s ease-in-out infinite;}
+    @keyframes legBob1{0%,100%{transform:rotate(0deg);}50%{transform:rotate(2deg) translateY(2px);}}
+    @keyframes legBob2{0%,100%{transform:rotate(0deg);}50%{transform:rotate(-2deg) translateY(2px);}}
+    /* happy bouncing legs */
+    #dollWrap.happy .d-leg-wrap:nth-child(1){animation:legHappy1 .5s ease-in-out infinite alternate;}
+    #dollWrap.happy .d-leg-wrap:nth-child(2){animation:legHappy2 .5s ease-in-out infinite alternate .25s;}
+    @keyframes legHappy1{0%{transform:rotate(-6deg) translateY(0);}100%{transform:rotate(0deg) translateY(-8px);}}
+    @keyframes legHappy2{0%{transform:rotate(6deg) translateY(0);}100%{transform:rotate(0deg) translateY(-8px);}}
+
+    /* ORBIT RINGS */
+    .d-orbit{position:absolute;border-radius:50%;border:2px solid rgba(255,75,114,0);pointer-events:none;transition:all .8s ease;}
+    .d-orbit.o1{width:250px;height:250px;top:50%;left:50%;transform:translate(-50%,-50%);}
+    .d-orbit.o2{width:320px;height:320px;top:50%;left:50%;transform:translate(-50%,-50%);transition-delay:.12s;}
+    .d-orbit.o3{width:390px;height:390px;top:50%;left:50%;transform:translate(-50%,-50%);transition-delay:.24s;}
+    #dollWrap.open .d-orbit.o1{border-color:rgba(255,75,114,.5);box-shadow:0 0 30px rgba(255,75,114,.3);animation:orb1 4s linear infinite;}
+    #dollWrap.open .d-orbit.o2{border-color:rgba(199,125,255,.35);box-shadow:0 0 25px rgba(199,125,255,.2);animation:orb2 6s linear infinite reverse;}
+    #dollWrap.open .d-orbit.o3{border-color:rgba(255,209,102,.2);animation:orb1 9s linear infinite;}
+    @keyframes orb1{to{transform:translate(-50%,-50%)rotate(360deg);}}
+    @keyframes orb2{to{transform:translate(-50%,-50%)rotate(360deg);}}
+    /* orbit dots */
+.od{position:absolute;width:10px;height:10px;border-radius:50%;top:-5px;left:50%;transform:translateX(-50%);}
+
+    /* ============================================================
+       LOCK PANEL
+    ============================================================ */
+    #lockPanel {
+        position:absolute;
+        left:50%; top:50%;
+        transform:translate(-50%, -40%) scale(.8);
+        display:flex;flex-direction:column;align-items:center;gap:1.4rem;
+        opacity:0;
+        transition:opacity .7s ease,transform .7s cubic-bezier(0.34,1.56,.64,1);
+        z-index:5;
+    }
+    #lockPanel.vis{opacity:1;transform:translate(-50%,-50%) scale(1);}
+
+    .lock-circle {
+        width:140px;height:140px;
+        background:rgba(255,255,255,.07);border:3px solid rgba(255,75,114,.4);border-radius:50%;
+        display:flex;align-items:center;justify-content:center;font-size:4rem;
+        box-shadow:0 0 50px rgba(255,75,114,.45),inset 0 0 25px rgba(255,75,114,.12);
+        position:relative;transition:all .6s ease;
+    }
+    /* rings around lock */
+    .lock-ring{position:absolute;border-radius:50%;border:1.5px solid rgba(255,75,114,.25);animation:lockRingPulse 2s ease-in-out infinite;}
+    .lock-ring.r1{width:170px;height:170px;animation-delay:0s;}
+    .lock-ring.r2{width:205px;height:205px;animation-delay:.4s;}
+    .lock-ring.r3{width:240px;height:240px;animation-delay:.8s;}
+    @keyframes lockRingPulse{0%,100%{opacity:.3;transform:scale(1);}50%{opacity:.7;transform:scale(1.04);}}
+
+    .lock-circle.typing{animation:lkTyping .35s ease-in-out infinite alternate;}
+    @keyframes lkTyping{0%{box-shadow:0 0 40px rgba(255,75,114,.4);}100%{box-shadow:0 0 80px rgba(255,209,102,.7),0 0 120px rgba(255,209,102,.3);}}
+    .lock-circle.unlocked{
+        background:rgba(255,209,102,.18);border-color:rgba(255,209,102,.8);
+        box-shadow:0 0 100px rgba(255,209,102,.8),0 0 180px rgba(255,209,102,.35);
+        transform:scale(1.2);
+    }
+    #lockIconEl{transition:all .5s ease;display:block;}
+    .lock-circle.unlocked #lockIconEl{animation:lockOpenSpin .6s cubic-bezier(0.34,1.56,.64,1);}
+    @keyframes lockOpenSpin{0%{transform:scale(0) rotate(-180deg);}100%{transform:scale(1) rotate(0deg);}}
+
+    /* PASSWORD DOTS */
+    #passDisplay{display:flex;gap:14px;align-items:center;height:40px;opacity:0;transition:opacity .4s ease;}
+    #passDisplay.vis{opacity:1;}
+    .pass-dot{width:18px;height:18px;border:2.5px solid rgba(255,75,114,.5);border-radius:50%;background:transparent;transform:scale(0);transition:transform .3s cubic-bezier(0.34,1.56,.64,1),background .2s ease,border-color .2s ease,box-shadow .2s ease;}
+    .pass-dot.filled{background:var(--rose);border-color:var(--rose);transform:scale(1);box-shadow:0 0 14px rgba(255,75,114,.8);}
+    .pass-dot.gold{background:var(--gold);border-color:var(--gold);box-shadow:0 0 18px rgba(255,209,102,.9);transform:scale(1.2);}
+
+    #lockCap{font-family:'Playfair Display',serif;font-size:1.15rem;color:rgba(255,255,255,.7);text-align:center;opacity:0;transition:opacity .4s ease;min-height:1.8rem;}
+    #lockCap.vis{opacity:1;}
+    #unlockMsg{font-family:'Playfair Display',serif;font-size:1.55rem;color:white;text-align:center;text-shadow:0 0 35px rgba(255,209,102,.9);opacity:0;transform:scale(.6);transition:opacity .7s ease,transform .7s cubic-bezier(0.34,1.56,.64,1);}
+    #unlockMsg.vis{opacity:1;transform:scale(1);}
+
+    /* ============================================================
+       BURST HEARTS
+    ============================================================ */
+    .bheart{position:absolute;font-size:2rem;opacity:0;pointer-events:none;z-index:20;left:50%;top:40%;}
+    .bheart.fire{animation:bFly var(--d,2s) cubic-bezier(.2,.6,.4,1) forwards;}
+    @keyframes bFly{
+        0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(0deg);}
+        12%{opacity:1;transform:translate(calc(-50% + var(--x1)),calc(-50% + var(--y1))) scale(1.2) rotate(var(--r1));}
+        70%{opacity:.9;transform:translate(calc(-50% + var(--x2)),calc(-50% + var(--y2))) scale(1) rotate(var(--r2));}
+        100%{opacity:0;transform:translate(calc(-50% + var(--x3)),calc(-50% + var(--y3))) scale(.3) rotate(var(--r3));}
+    }
+
+    /* ============================================================
+       TRANSITIONS
+    ============================================================ */
+    #flashEl{position:fixed;inset:0;z-index:99998;opacity:0;background:white;pointer-events:none;transition:opacity .18s ease;}
+    #flashEl.on{opacity:.92;}
+    #fadeEl{position:fixed;inset:0;z-index:99999;opacity:0;background:radial-gradient(circle,#1a0535,#050010);pointer-events:none;transition:opacity .9s ease;}
+    #fadeEl.on{opacity:1;}
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media(max-width:600px){
+        .lcard{padding:2rem 1.3rem 1.8rem;border-radius:22px;}
+        .card-title{font-size:1.5rem;}
+        .d-head{width:100px;height:110px;}
+        .d-hair{width:100px;height:56px;}
+        .d-body{width:110px;height:122px;}
+        .d-door{width:55px;height:83px;}
+        .lock-circle{width:110px;height:110px;font-size:3rem;}
+        #unlockMsg{font-size:1.2rem;}
+    }
+    </style>
+</head>
+<body>
+
+<div class="bg-glow g1"></div>
+<div class="bg-glow g2"></div>
+<div class="bg-glow g3"></div>
+<canvas id="bgCanvas"></canvas>
+
+<!-- ===== LOGIN CARD ===== -->
+<div id="page">
+    <div class="lcard" id="loginCard">
+        <h1 class="card-title">Unlock My Heart 💖</h1>
+        <p class="card-sub">Enter your name and secret word to open something beautiful made just for you.</p>
+        <form id="loginForm" novalidate>
+            <div class="field">
+                <span class="field-ico"><i class="fa-solid fa-user"></i></span>
+                <input type="text" id="nameIn" placeholder="Your name…" autocomplete="off">
+            </div>
+            <div class="field">
+                <span class="field-ico"><i class="fa-solid fa-heart"></i></span>
+                <input type="password" id="passIn" placeholder="Secret passcode…" autocomplete="off">
+            </div>
+            <p class="err-msg" id="errMsg"></p>
+            <button type="submit" class="sub-btn" id="loginBtn">
+                <i class="fa-solid fa-key" id="btnIco"></i>
+                <span id="btnTxt">Unlock & Enter ❤️</span>
+            </button>
+        </form>
+        <div class="hint-row">
+            <button class="hint-toggle" id="hintBtn">💡 Need a hint?</button>
+            <p class="hint-txt" id="hintTxt">Username → <strong>joker</strong> &nbsp;|&nbsp; Passcode → <strong>lax</strong> 🔑</p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== FULL-SCREEN ANIMATION OVERLAY ===== -->
+<div id="animOv">
+    <div id="starField"></div>
+    <div id="floorGlow"></div>
+    <div id="stepLbl"></div>
+    <div id="burstContainer"></div>
+
+    <!-- THE BIG DOLL -->
+    <div id="dollWrap">
+        <!-- Orbit rings -->
+        <div class="d-orbit o3"><div class="od" style="background:#ffd166;box-shadow:0 0 10px #ffd166;"></div></div>
+        <div class="d-orbit o2"><div class="od" style="background:#c77dff;box-shadow:0 0 10px #c77dff;"></div></div>
+        <div class="d-orbit o1"><div class="od" style="background:#ff4b72;box-shadow:0 0 10px #ff4b72;"></div></div>
+
+        <!-- Hair -->
+        <div class="d-hair">
+            <span class="hair-pin p1">⭐</span>
+            <span class="hair-pin p2">💫</span>
+            <div class="d-bang"></div><div class="d-bang"></div><div class="d-bang"></div>
+            <div class="d-bang"></div><div class="d-bang"></div>
+            <div class="d-side L"></div><div class="d-side R"></div>
+        </div>
+
+        <!-- Head -->
+        <div class="d-head">
+            <div class="d-ear L"><div class="d-ear-inner"></div></div>
+            <div class="d-ear R"><div class="d-ear-inner"></div></div>
+
+            <!-- Left eye -->
+            <div class="d-eye-wrap L" id="eyeL">
+                <div class="d-eyebrow"></div>
+                <div class="d-eye-white">
+                    <div class="d-lash"></div><div class="d-lash"></div><div class="d-lash"></div><div class="d-lash"></div><div class="d-lash"></div>
+                    <div class="d-pupil">
+                        <div class="d-shine1"></div>
+                        <div class="d-shine2"></div>
+                    </div>
+                    <div class="d-lid"></div>
+                </div>
+                <span class="d-eye-star">✨</span>
+            </div>
+
+            <!-- Right eye -->
+            <div class="d-eye-wrap R" id="eyeR">
+                <div class="d-eyebrow"></div>
+                <div class="d-eye-white">
+                    <div class="d-lash"></div><div class="d-lash"></div><div class="d-lash"></div><div class="d-lash"></div><div class="d-lash"></div>
+                    <div class="d-pupil">
+                        <div class="d-shine1"></div>
+                        <div class="d-shine2"></div>
+                    </div>
+                    <div class="d-lid"></div>
+                </div>
+                <span class="d-eye-star">✨</span>
+            </div>
+
+            <div class="d-cheek L"></div>
+            <div class="d-cheek R"></div>
+            <div class="d-nose"></div>
+            <div class="d-mouth"><div class="d-tooth"></div></div>
+        </div>
+
+        <!-- Neck -->
+        <div class="d-neck"></div>
+
+        <!-- Body -->
+        <div class="d-body">
+            <div class="d-collar"></div>
+            <div class="d-stripe"></div><div class="d-stripe"></div><div class="d-stripe"></div>
+            <div class="d-bow">🎀</div>
+            <div class="d-inner"></div>
+            <div class="d-door L"><div class="d-door-star">⭐</div></div>
+            <div class="d-door R"><div class="d-door-star">⭐</div></div>
+            <div class="d-chest-heart">💖</div>
+
+            <!-- LEFT ARM -->
+            <div class="d-arm-wrap L">
+                <div class="d-upper"></div>
+                <div class="d-fore">
+                    <div class="d-hand">
+                        <div class="d-finger"></div><div class="d-finger"></div>
+                        <div class="d-finger"></div><div class="d-finger"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT ARM -->
+            <div class="d-arm-wrap R">
+                <div class="d-upper"></div>
+                <div class="d-fore">
+                    <div class="d-hand">
+                        <div class="d-finger"></div><div class="d-finger"></div>
+                        <div class="d-finger"></div><div class="d-finger"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legs -->
+        <div class="d-legs">
+            <div class="d-leg-wrap">
+                <div class="d-thigh"></div>
+                <div class="d-shin"></div>
+                <div class="d-shoe"><div class="d-shoe-shine"></div></div>
+            </div>
+            <div class="d-leg-wrap">
+                <div class="d-thigh"></div>
+                <div class="d-shin"></div>
+                <div class="d-shoe"><div class="d-shoe-shine"></div></div>
+            </div>
+        </div>
+    </div><!-- end dollWrap -->
+
+    <!-- LOCK PANEL -->
+    <div id="lockPanel">
+        <div class="lock-circle" id="lockCircle">
+            <div class="lock-ring r1"></div>
+            <div class="lock-ring r2"></div>
+            <div class="lock-ring r3"></div>
+            <span id="lockIconEl">🔒</span>
+        </div>
+        <div id="passDisplay"></div>
+        <div id="lockCap">Entering secret passcode…</div>
+        <div id="unlockMsg">🎉 Unlocked! Your surprise is opening… 💖</div>
+    </div>
+
+</div><!-- end animOv -->
+
+<div id="flashEl"></div>
+<div id="fadeEl"></div>
+
+<script>
+/* ============================================================
+   AMBIENT CANVAS HEARTS
+============================================================ */
+(function(){
+    const c=document.getElementById('bgCanvas'),ctx=c.getContext('2d');
+    let W=c.width=innerWidth,H=c.height=innerHeight;
+    addEventListener('resize',()=>{W=c.width=innerWidth;H=c.height=innerHeight;});
+    const COLS=['#ff4b72','#ff7597','#c77dff','#ffd166','#f72585','#a855f7'];
+    const pts=Array.from({length:35},()=>mkP());
+    function mkP(){return{x:Math.random()*W,y:H+Math.random()*140,sz:Math.random()*14+6,vy:Math.random()*.85+.28,vx:(Math.random()-.5)*.38,a:Math.random()*.42+.1,col:COLS[Math.random()*COLS.length|0],w:Math.random()*Math.PI*2};}
+    function hrt(x,y,s,col,a){ctx.save();ctx.globalAlpha=a;ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x,y+s*.35);ctx.bezierCurveTo(x,y,x-s,y,x-s,y+s*.35);ctx.bezierCurveTo(x-s,y+s*.7,x,y+s*1.1,x,y+s*1.1);ctx.bezierCurveTo(x,y+s*1.1,x+s,y+s*.7,x+s,y+s*.35);ctx.bezierCurveTo(x+s,y,x,y,x,y+s*.35);ctx.fill();ctx.restore();}
+    (function loop(){ctx.clearRect(0,0,W,H);for(const p of pts){p.w+=.013;p.y-=p.vy;p.x+=Math.sin(p.w)*.5+p.vx;if(p.y<-35)Object.assign(p,mkP(),{y:H+35,x:Math.random()*W});hrt(p.x,p.y,p.sz,p.col,p.a);}requestAnimationFrame(loop);})();
+})();
+
+/* ============================================================
+   STARS
+============================================================ */
+(function(){
+    const sf=document.getElementById('starField');
+    for(let i=0;i<65;i++){
+        const s=document.createElement('div');s.className='star';
+        const sz=Math.random()*2.8+1;
+        s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${Math.random()*3+1.5}s;--delay:${Math.random()*3}s;`;
+        sf.appendChild(s);
+    }
+})();
+
+/* ============================================================
+   BURST HEARTS
+============================================================ */
+(function(){
+    const bc=document.getElementById('burstContainer');
+    const data=[
+        {e:'💗',x1:'-35px',y1:'-90px',x2:'-90px',y2:'-200px',x3:'-125px',y3:'-310px',r1:'-12deg',r2:'-20deg',r3:'-28deg',d:'2.1s'},
+        {e:'💕',x1:'45px', y1:'-80px',x2:'115px',y2:'-190px',x3:'160px',y3:'-295px',r1:'14deg', r2:'22deg', r3:'30deg', d:'2.3s'},
+        {e:'✨',x1:'-80px',y1:'-45px',x2:'-185px',y2:'-130px',x3:'-250px',y3:'-220px',r1:'-22deg',r2:'-33deg',r3:'-44deg',d:'1.9s'},
+        {e:'💝',x1:'85px', y1:'-40px',x2:'195px',y2:'-120px',x3:'260px',y3:'-210px',r1:'20deg',r2:'30deg',r3:'40deg',d:'2.2s'},
+        {e:'🌸',x1:'-15px',y1:'-110px',x2:'-30px',y2:'-230px',x3:'-42px',y3:'-345px',r1:'6deg',r2:'12deg',r3:'18deg',d:'2.0s'},
+        {e:'💫',x1:'22px', y1:'-120px',x2:'55px',y2:'-240px',x3:'70px',y3:'-360px',r1:'-9deg',r2:'-17deg',r3:'-25deg',d:'1.8s'},
+        {e:'⭐',x1:'-62px',y1:'-100px',x2:'-150px',y2:'-215px',x3:'-205px',y3:'-325px',r1:'-16deg',r2:'-24deg',r3:'-33deg',d:'2.4s'},
+        {e:'💞',x1:'65px', y1:'-95px',x2:'155px',y2:'-208px',x3:'210px',y3:'-318px',r1:'16deg',r2:'24deg',r3:'33deg',d:'2.1s'},
+        {e:'💖',x1:'5px',  y1:'-108px',x2:'11px',y2:'-235px',x3:'8px',  y3:'-360px',r1:'4deg',r2:'8deg',r3:'11deg',d:'2.5s'},
+        {e:'🎀',x1:'-105px',y1:'-60px',x2:'-220px',y2:'-150px',x3:'-295px',y3:'-245px',r1:'-25deg',r2:'-38deg',r3:'-50deg',d:'2.0s'},
+        {e:'🌟',x1:'108px',y1:'-55px',x2:'225px',y2:'-140px',x3:'300px',y3:'-235px',r1:'25deg',r2:'38deg',r3:'50deg',d:'2.0s'},
+    ];
+    data.forEach(h=>{
+        const el=document.createElement('div');el.className='bheart';el.textContent=h.e;
+        el.style.cssText=`--x1:${h.x1};--y1:${h.y1};--x2:${h.x2};--y2:${h.y2};--x3:${h.x3};--y3:${h.y3};--r1:${h.r1};--r2:${h.r2};--r3:${h.r3};--d:${h.d};`;
+        bc.appendChild(el);
+    });
+})();
+
+/* ============================================================
+   PASSWORD DOTS
+============================================================ */
+const PASSWORD='lax';
+const pd=document.getElementById('passDisplay');
+for(let i=0;i<PASSWORD.length;i++){
+    const d=document.createElement('div');d.className='pass-dot';d.id='pdot'+i;pd.appendChild(d);
+}
+
+/* ============================================================
+   EYE BLINK SYSTEM
+============================================================ */
+(function(){
+    const L=document.getElementById('eyeL'),R=document.getElementById('eyeR');
+    function blink(){
+        L.classList.add('blink');R.classList.add('blink');
+        setTimeout(()=>{L.classList.remove('blink');R.classList.remove('blink');},115);
+        // double blink sometimes
+        if(Math.random()<0.3){
+            setTimeout(()=>{L.classList.add('blink');R.classList.add('blink');},200);
+            setTimeout(()=>{L.classList.remove('blink');R.classList.remove('blink');},310);
+        }
+        setTimeout(blink,Math.random()*3800+1800);
+    }
+    setTimeout(blink,1200);
+})();
+
+/* ============================================================
+   FORM LOGIC
+============================================================ */
+const VALID_USER='joker',PASS='lax';
+document.getElementById('hintBtn').addEventListener('click',()=>document.getElementById('hintTxt').classList.toggle('show'));
+document.getElementById('loginForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    const name=document.getElementById('nameIn').value.trim();
+    const pass=document.getElementById('passIn').value.trim().toLowerCase();
+    const err=document.getElementById('errMsg'),card=document.getElementById('loginCard');
+    err.textContent='';
+    if(!name){err.textContent='✦ Please enter your name first.';shake(card);return;}
+    if(name.toLowerCase()!==VALID_USER){err.textContent='✦ Hmm, that name doesn\'t seem right 💗';shake(card);return;}
+    if(!pass){err.textContent='✦ Please enter the secret passcode.';shake(card);return;}
+    if(pass!==PASS){err.textContent='✦ Wrong passcode! Check the hint below 💗';shake(card);return;}
+    const btn=document.getElementById('loginBtn');
+    btn.disabled=true;
+    document.getElementById('btnIco').className='fa-solid fa-spinner fa-spin';
+    document.getElementById('btnTxt').textContent='Opening your surprise…';
+    startAnimation(name);
+});
+function shake(el){el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake');el.addEventListener('animationend',()=>el.classList.remove('shake'),{once:true});}
+
+/* ============================================================
+   ANIMATION MASTER SEQUENCE
+   [0.3s]  Overlay fades in
+   [0.5s]  Doll slides UP from bottom (big springy entrance)
+   [1.6s]  Doll IDLES (floating bounce)
+   [2.0s]  Doll gets EXCITED (arms shoot up)
+   [2.8s]  Doll puts hands to chest (NOTICE)
+   [3.5s]  Chest OPENS → heart appears
+   [4.2s]  Heart BLINKS 3x with big glow pulse
+   [5.8s]  Doll goes HAPPY (waves, smiles, bounces)
+   [6.6s]  Doll EXITS (slides back down)
+   [7.2s]  LOCK panel rises up
+   [7.8s]  Password DOTS fill one-by-one
+   [9.0s]  LOCK OPENS → hearts burst everywhere
+   [10.2s] White flash → dark fade → index.html
+============================================================ */
+function startAnimation(name){
+    const ov=document.getElementById('animOv');
+    const dw=document.getElementById('dollWrap');
+    const lp=document.getElementById('lockPanel');
+    const lc=document.getElementById('lockCircle');
+    const li=document.getElementById('lockIconEl');
+    const pd2=document.getElementById('passDisplay');
+    const lcap=document.getElementById('lockCap');
+    const umsg=document.getElementById('unlockMsg');
+    const sl=document.getElementById('stepLbl');
+    const flash=document.getElementById('flashEl');
+    const fade=document.getElementById('fadeEl');
+
+    function label(txt){sl.classList.remove('vis');setTimeout(()=>{sl.textContent=txt;sl.classList.add('vis');},200);}
+
+    // Show overlay
+    ov.classList.add('active');
+
+    /* Step 1 — BIG entrance: doll slides up */
+    setTimeout(()=>{ label('💃 She\'s here for you…'); dw.classList.add('entered'); }, 400);
+
+    /* Step 2 — Idle float */
+    setTimeout(()=>{ dw.classList.add('idle'); }, 1550);
+
+    /* Step 3 — EXCITED: arms fly up, she jumps */
+    setTimeout(()=>{
+        label('🎉 Something special detected!');
+        dw.classList.remove('idle');
+        dw.classList.add('excited');
+    }, 2100);
+
+    /* Step 4 — NOTICE: hands move to chest */
+    setTimeout(()=>{
+        label('💗 Feeling it in her heart…');
+        dw.classList.remove('excited');
+        dw.classList.add('notice');
+    }, 3000);
+
+    /* Step 5 — CHEST OPENS */
+    setTimeout(()=>{
+        dw.classList.remove('notice');
+        dw.classList.add('open');
+    }, 3750);
+
+    /* Step 6 — HEART BLINKS */
+    setTimeout(()=>{ dw.classList.add('heartblink'); }, 4400);
+
+    /* Step 7 — HAPPY: doll waves and bounces */
+    setTimeout(()=>{
+        label('💖 Love unlocked!');
+        dw.classList.remove('heartblink','open');
+        dw.classList.add('happy');
+    }, 5900);
+
+    /* Step 8 — Doll EXITS down */
+    setTimeout(()=>{
+        label('🔒 Now for the secret lock…');
+        dw.classList.add('exit');
+    }, 6700);
+
+    /* Step 9 — LOCK appears */
+    setTimeout(()=>{
+        dw.style.display='none';
+        lp.classList.add('vis');
+        pd2.classList.add('vis');
+        lcap.classList.add('vis');
+    }, 7400);
+
+    /* Step 10 — Dots auto-type */
+    for(let i=0;i<PASSWORD.length;i++){
+        setTimeout(()=>{
+            document.getElementById('pdot'+i).classList.add('filled');
+            lc.classList.add('typing');
+        }, 7700 + i*430);
+    }
+
+    const allDone = 7700 + (PASSWORD.length-1)*430 + 350;
+
+    /* Dots go GOLD */
+    setTimeout(()=>{
+        lc.classList.remove('typing');
+        document.querySelectorAll('.pass-dot').forEach(d=>d.classList.add('gold'));
+        lcap.textContent='✓ Passcode accepted!';
+    }, allDone);
+
+    /* Step 11 — LOCK OPENS */
+    const openAt = allDone + 650;
+    setTimeout(()=>{
+        label('🔓 Opening your surprise…');
+        li.textContent='🔓';
+        lc.classList.add('unlocked');
+        lcap.classList.remove('vis');
+        umsg.classList.add('vis');
+        document.querySelectorAll('.bheart').forEach(h=>h.classList.add('fire'));
+    }, openAt);
+
+    /* Step 12 — Flash and navigate */
+    setTimeout(()=>{ flash.classList.add('on'); }, openAt+1300);
+    setTimeout(()=>{ flash.classList.remove('on'); fade.classList.add('on'); }, openAt+1530);
+    setTimeout(()=>{ window.location.href='home.html'; }, openAt+2400);
+}
+</script>
+</body>
+</html>

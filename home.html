@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>A Special Surprise For You ✨</title>
+    <meta name="description" content="A personalized interactive page filled with memories, sweet notes, and a special question.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- 3D Toy Hug Intro Transition Overlay -->
+    <div id="introOverlay" class="intro-overlay">
+        <div class="intro-card">
+            <div class="toy-stage">
+                <div class="toy-avatar boy-toy" id="boyToy">
+                    <div class="toy-head">👦</div>
+                    <div class="toy-arm arm-l"></div>
+                    <div class="toy-arm arm-r"></div>
+                </div>
+                <div class="toy-avatar girl-toy" id="girlToy">
+                    <div class="toy-head">👧</div>
+                    <div class="toy-arm arm-l"></div>
+                    <div class="toy-arm arm-r"></div>
+                </div>
+                <div class="hug-heart-burst" id="hugHeartBurst">💖</div>
+                <div class="intro-scene-frame">
+                    <img src="romantic_3d_couple.jpg" alt="3D Romantic Dolls Hug" class="intro-hug-img">
+                </div>
+            </div>
+            <h2 class="intro-heading">Made With Love For You ✨</h2>
+            <p class="intro-subtext">Two hearts coming together in a special moment...</p>
+            <button id="startExperienceBtn" class="intro-btn">
+                <i class="fa-solid fa-heart"></i> Tap to Open Your Surprise ❤️
+            </button>
+        </div>
+    </div>
+
+    <!-- Dynamic Background Canvas -->
+    <canvas id="particleCanvas"></canvas>
+    
+    <!-- Ambient Glow Effects -->
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <!-- Header & Quick Action Bar -->
+    <header class="top-nav">
+        <div class="logo">
+            <i class="fa-solid fa-heart heart-pulse"></i>
+            <span>For You</span>
+        </div>
+        <div class="nav-actions">
+            <button id="musicToggle" class="nav-btn highlight-btn" title="Toggle Ambient Music">
+                <i class="fa-solid fa-music"></i>
+                <span id="musicStatusText">Play Music 🎵</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="badge">
+                <i class="fa-solid fa-sparkles"></i> Crafted With Love
+            </div>
+            <h1 class="hero-title">
+                Hey <span class="highlight-name" id="displayHerName">Beautiful</span>, 
+                <br>I Made Something Special For You.
+            </h1>
+            <p class="hero-subtitle" id="displayHeroSubtext">
+                Every detail here was built to put a smile on your face today.
+            </p>
+
+            <!-- Featured 3D Romantic Couple Scene -->
+            <div class="hero-scene-container">
+                <div class="scene-card">
+                    <img src="romantic_3d_couple.jpg" alt="Cute Romantic 3D Couple" class="scene-img">
+                    <div class="scene-overlay">
+                        <span class="scene-badge"><i class="fa-solid fa-heart"></i> You & Me</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wax Sealed Interactive Envelope -->
+            <div class="envelope-wrapper" id="envelopeWrapper">
+                <div class="envelope" id="envelope">
+                    <div class="envelope-flap"></div>
+                    <div class="envelope-pocket"></div>
+                    <div class="envelope-letter">
+                        <div class="letter-stamp"><i class="fa-solid fa-heart"></i></div>
+                        <h3 class="letter-greeting">Dearest <span class="letter-her-name">Friend</span>,</h3>
+                        <p class="letter-body-preview" id="displayLetterPreview">Click below to unfold the full message created just for you...</p>
+                    </div>
+                    <div class="wax-seal" id="waxSeal">
+                        <i class="fa-solid fa-heart"></i>
+                        <span>OPEN</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Letter Modal / Reader -->
+        <div class="letter-modal-overlay" id="letterModal">
+            <div class="letter-modal-card">
+                <button class="close-modal-btn" id="closeLetterBtn">&times;</button>
+                <div class="letter-paper">
+                    <div class="letter-header">
+                        <span class="letter-date" id="displayLetterDate">Today</span>
+                        <h2 class="letter-title">A Message From My Heart</h2>
+                    </div>
+                    <div class="letter-content" id="displayFullLetter">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                    <div class="letter-signature">
+                        <span>Yours truly,</span>
+                        <h3 class="sign-name" id="displayYourName">Someone who appreciates you</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Reasons Grid -->
+        <section class="reasons-section">
+            <div class="section-header">
+                <h2 class="section-title">Little Things That Make You Amazing ✨</h2>
+                <p class="section-desc">Tap or click any card to reveal a special note!</p>
+            </div>
+            
+            <div class="reasons-grid" id="reasonsGrid">
+                <!-- Cards generated dynamically -->
+            </div>
+        </section>
+
+        <!-- Polaroid Memory Lane / Gallery -->
+        <section class="gallery-section">
+            <div class="section-header">
+                <h2 class="section-title">Our Favorite Moments 📸</h2>
+                <p class="section-desc">Snapshots of moments that always bring a smile.</p>
+            </div>
+
+            <div class="polaroid-container" id="polaroidContainer">
+                <!-- Dynamic Polaroids loaded here -->
+            </div>
+        </section>
+
+        <!-- Secret Love Notes Generator Section -->
+        <section class="love-notes-section">
+            <div class="section-header">
+                <h2 class="section-title">A Secret Note For You 💌</h2>
+                <p class="section-desc">Tap the heart to read a sweet message straight from my heart.</p>
+            </div>
+
+            <div class="love-note-card">
+                <div class="note-heart-icon" id="noteHeartIcon"><i class="fa-solid fa-envelope-open-text"></i></div>
+                <p class="note-text" id="displayLoveNote">"Even when things get difficult, my heart will always choose you. You are my favorite person."</p>
+                <button class="primary-btn note-btn" id="nextNoteBtn">
+                    <i class="fa-solid fa-sparkles"></i> Tap For Another Sweet Note 💖
+                </button>
+            </div>
+        </section>
+
+        <!-- Promises From My Heart Section -->
+        <section class="promises-section">
+            <div class="section-header">
+                <h2 class="section-title">My Promises To You 🌸</h2>
+                <p class="section-desc">Little commitments I carry in my heart every single day.</p>
+            </div>
+
+            <div class="promises-grid">
+                <div class="promise-card">
+                    <div class="promise-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                    <h3>I Promise To Listen</h3>
+                    <p>To always hear your thoughts, respect your feelings, and never take your heart for granted.</p>
+                </div>
+                <div class="promise-card">
+                    <div class="promise-icon"><i class="fa-solid fa-shield-heart"></i></div>
+                    <h3>I Promise To Protect Us</h3>
+                    <p>To learn from past mistakes, grow every day, and treat you with the care you deserve.</p>
+                </div>
+                <div class="promise-card">
+                    <div class="promise-icon"><i class="fa-solid fa-sun"></i></div>
+                    <h3>I Promise To Appreciate You</h3>
+                    <p>To remind you how special, beautiful, and important you are to me — always.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Date Request Section ("The Big Question") -->
+        <section class="question-section" id="dateQuestionSection">
+            <div class="question-card">
+                <div class="question-badge"><i class="fa-solid fa-calendar-star"></i> Quick Question</div>
+                <h2 class="question-title" id="displayQuestionTitle">Would you go on a date with me? ☕✨</h2>
+                <p class="question-subtitle" id="displayQuestionSubtext">I promise great conversation, good laughs, and your favorite treats.</p>
+                
+                <div class="proposal-buttons">
+                    <button class="btn-yes" id="yesBtn">
+                        <i class="fa-solid fa-heart"></i> YES! I'd love to!
+                    </button>
+                    <button class="btn-no" id="noBtn">
+                        <span>No, maybe later</span>
+                    </button>
+                </div>
+                <p class="playful-hint" id="playfulHint">Tip: The "No" button is a little shy... try catching it! 😉</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Card Click Reveal Popup Modal -->
+    <div class="modal-overlay" id="reasonModal">
+        <div class="reason-modal-card">
+            <button class="close-modal-btn" id="closeReasonBtn">&times;</button>
+            <div class="reason-modal-icon" id="reasonModalIcon">
+                <i class="fa-solid fa-heart"></i>
+            </div>
+            <h2 class="reason-modal-title" id="reasonModalTitle">A Special Message For You ✨</h2>
+            <p class="reason-modal-body" id="reasonModalBody">Here is a little note to make you smile today...</p>
+            <div class="reason-modal-quote" id="reasonModalQuote">"Keep smiling, beautiful — it suits you perfectly. ❤️"</div>
+            <button class="primary-btn" id="closeReasonActionBtn">
+                <i class="fa-solid fa-heart"></i> Sending You A Warm Hug ❤️
+            </button>
+        </div>
+    </div>
+
+    <!-- Celebration Modal (When She Clicks YES!) -->
+    <div class="modal-overlay" id="successModal">
+        <div class="celebration-card">
+            <div class="confetti-icon">🎉💖✨</div>
+            <h2>YAY! You Said YES! 🥳</h2>
+            <p id="displaySuccessMessage">I'm so excited! Let's pick a time and place that works best for you!</p>
+            <div class="date-details-box" id="dateDetailsBox">
+                <div class="detail-item"><i class="fa-solid fa-mug-hot"></i> <span id="displayPlanIdea">Coffee & Pastries</span></div>
+                <div class="detail-item"><i class="fa-solid fa-clock"></i> <span id="displayPlanTime">Whenever you're free!</span></div>
+            </div>
+            <button class="primary-btn" id="closeSuccessBtn">Send a message to let me know!</button>
+        </div>
+    </div>
+
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Made with ❤️ to create beautiful moments.</p>
+    </footer>
+
+    <!-- Audio Element (Optional Ambient Royalty Free Sound) -->
+    <audio id="bgAudio" loop preload="none">
+        <source src="hindi%20song.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
